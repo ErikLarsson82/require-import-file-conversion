@@ -5,6 +5,9 @@ const { foo3, foo4 } = require('foo5')
 const test = require('test')
 
 const {
-	foo3,
-	foo4
-} = require('foo5')
+  foo6,
+  foo7
+} = require('foo8')
+
+const { foo9 } = require('paths/is/nice')
+const { fooWITHCAPS } = require('./local/TOO')
