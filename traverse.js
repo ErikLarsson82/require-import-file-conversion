@@ -26,7 +26,14 @@ function parseSpread(fileStr) {
 
 const parseAll = compose(parseSpread, parseSingle)
 
-function rewrite(err, file) {
-	fs.writeFile('files/output.js', parseAll(file), () => console.log('Conversion complete'))
+function rewrite(filepath) {
+	return (err, file) =>
+		fs.writeFile(`output/${filepath}`, parseAll(file), () => console.log(`${filepath} done`))
 }
-fs.readFile('files/input.js', 'utf8', rewrite)
+//fs.readFile('files/input.js', 'utf8', rewrite)
+
+fs.readdir('input', function(err, files) {
+	files.map(filepath => {
+		fs.readFile(`input/${filepath}`, 'utf8', rewrite(filepath))
+	})
+})
