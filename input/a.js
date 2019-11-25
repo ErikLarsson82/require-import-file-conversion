@@ -12,3 +12,8 @@ const {
 
 const { foo9 } = require('paths/is/nice')
 const { fooWITHCAPS } = require('./local/TOO')
+
+module.exports = {
+	foo9,
+	foo6
+}

@@ -1,16 +1,23 @@
 const fs = require('fs')
 
 function replacerCurly(match, p1, p2, p3, p4, p5m, offset, string) {
+	console.log(arguments)
 	return ['import {', p2, '} from \'', p4, '\''].join('')
 }
 
 function replacerSingle(match, p1, p2, p3, p4, p5m, offset, string) {
+	console.log(arguments)
 	return ['import ', p2, ' from \'', p4, '\''].join('')
 }
 
-function compose(a, b) {
+function replacerExports(match, p1) {
+	console.log(arguments)
+	return ['export default '].join('')
+}
+
+function compose(a, b, c) {
 	return function(x) {
-		return a(b(x))
+		return a(b(c(x)))
 	}
 }
 
@@ -24,13 +31,17 @@ function parseSpread(fileStr) {
 	return fileStr.replace(reg, replacerCurly)
 }
 
-const parseAll = compose(parseSpread, parseSingle)
+function parseExports(fileStr) {
+	const reg = /module.exports = /
+	return fileStr.replace(reg, replacerExports)	
+}
+
+const parseAll = compose(parseExports, parseSpread, parseSingle)
 
 function rewrite(filepath) {
 	return (err, file) =>
 		fs.writeFile(`output/${filepath}`, parseAll(file), () => console.log(`${filepath} done`))
 }
-//fs.readFile('files/input.js', 'utf8', rewrite)
 
 fs.readdir('input', function(err, files) {
 	files.map(filepath => {

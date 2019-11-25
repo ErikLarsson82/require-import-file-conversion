@@ -12,3 +12,7 @@ const {
 
 const { bar9 } = require('paths/is/nice')
 const { barWITHCAPS } = require('./local/TOO')
+
+const barooney = ""
+
+module.exports = barooney
