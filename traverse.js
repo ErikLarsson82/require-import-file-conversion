@@ -1,17 +1,14 @@
 const fs = require('fs')
 
 function replacerCurly(match, p1, p2, p3, p4, p5m, offset, string) {
-	console.log(arguments)
 	return ['import {', p2, '} from \'', p4, '\''].join('')
 }
 
 function replacerSingle(match, p1, p2, p3, p4, p5m, offset, string) {
-	console.log(arguments)
 	return ['import ', p2, ' from \'', p4, '\''].join('')
 }
 
 function replacerExports(match, p1) {
-	console.log(arguments)
 	return ['export default '].join('')
 }
 
@@ -39,12 +36,36 @@ function parseExports(fileStr) {
 const parseAll = compose(parseExports, parseSpread, parseSingle)
 
 function rewrite(filepath) {
-	return (err, file) =>
+	return (err, file) => {
+		//console.log(`output/${filepath}`)
 		fs.writeFile(`output/${filepath}`, parseAll(file), () => console.log(`${filepath} done`))
+	}
 }
 
-fs.readdir('input', function(err, files) {
-	files.map(filepath => {
-		fs.readFile(`input/${filepath}`, 'utf8', rewrite(filepath))
-	})
-})
+function mapFiles(path) {
+	console.log('path ' + path)
+	
+	return function(err, files) {
+		console.log(`files=${files}`)
+		files.map(filepath => {
+			console.log('filepath ' + filepath)
+			if (filepath.indexOf('.js') !== -1) {
+				const target = `${path}/${filepath}`//path !== '' ? `${path}/${filepath}` : filepath
+				console.log(`file ${target} path=${path} filepath=${filepath}`)
+				fs.readFile(`input/${target}`, 'utf8', rewrite(target))
+			} else {
+				//if (path !== '') {
+				fs.mkdirSync(`output${path}`, () => console.log('creating directory ' + path))
+				//}
+				console.log(`folder output${path}`)
+				readDirectory(`${path}/${filepath}`)
+			}
+		})
+	}
+}
+
+function readDirectory(dir) {
+	fs.readdir(`input/${dir}`, mapFiles(dir))
+}
+
+readDirectory('')
