@@ -41,33 +41,6 @@ function rewrite(filepath) {
 	}
 }
 
-/*function mapFiles(path) {
-	console.log('path ' + path)
-	
-	return function(err, files) {
-		console.log(`files=${files}`)
-		files.map(filepath => {
-			console.log('filepath ' + filepath)
-			if (filepath.indexOf('.js') !== -1) {
-				const target = `${path}/${filepath}`//path !== '' ? `${path}/${filepath}` : filepath
-				console.log(`file ${target} path=${path} filepath=${filepath}`)
-				fs.readFile(`input/${target}`, 'utf8', rewrite(target))
-			} else {
-				//if (path !== '') {
-				fs.mkdirSync(`output${path}`, () => console.log('creating directory ' + path))
-				//}
-				console.log(`folder output${path}`)
-				readDirectory(`${path}/${filepath}`)
-			}
-		})
-	}
-}*/
-
-function list(err, path) {
-	console.log(`files=${path}`)
-	
-}
-
 function readDirectory(dir) {
 	const everything = fs.readdirSync(`input/${dir}`)
 	let files = []
@@ -83,7 +56,6 @@ function readDirectory(dir) {
 			files.push(fullPathAndFile)
 		}
 	})
-	//console.log(files, folders)
 	return { files, folders }
 }
 
