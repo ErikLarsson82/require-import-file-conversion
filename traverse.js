@@ -37,12 +37,11 @@ const parseAll = compose(parseExports, parseSpread, parseSingle)
 
 function rewrite(filepath) {
 	return (err, file) => {
-		//console.log(`output/${filepath}`)
-		fs.writeFile(`output/${filepath}`, parseAll(file), () => console.log(`${filepath} done`))
+		fs.writeFile(`output${filepath}`, parseAll(file), () => console.log(`${filepath} done`))
 	}
 }
 
-function mapFiles(path) {
+/*function mapFiles(path) {
 	console.log('path ' + path)
 	
 	return function(err, files) {
@@ -62,10 +61,49 @@ function mapFiles(path) {
 			}
 		})
 	}
+}*/
+
+function list(err, path) {
+	console.log(`files=${path}`)
+	
 }
 
 function readDirectory(dir) {
-	fs.readdir(`input/${dir}`, mapFiles(dir))
+	const everything = fs.readdirSync(`input/${dir}`)
+	let files = []
+	let folders = []
+	everything.map(filepath => {
+		const fullPathAndFile = `${dir}/${filepath}`
+		if (filepath.indexOf('.js') === -1) {
+			folders.push(fullPathAndFile)
+			const result = readDirectory(fullPathAndFile)
+			files = files.concat(result.files)
+			folders = folders.concat(result.folders)
+		} else {
+			files.push(fullPathAndFile)
+		}
+	})
+	//console.log(files, folders)
+	return { files, folders }
 }
 
-readDirectory('')
+const { files, folders } = readDirectory('')
+
+try {
+	fs.mkdirSync(`output`, () => console.log('creating directory output'))
+} catch(e) {
+	console.log('Skipping folder create \'output\'')
+}
+
+folders.map(folder => {
+	try {
+		fs.mkdirSync(`output${folder}`, () => console.log('creating directory ' + folder))
+	} catch(e) {
+		console.log(`Skipping folder create ${folder}`)
+	}
+	
+})
+
+files.forEach(file => {
+	fs.readFile(`input${file}`, 'utf8', rewrite(file))
+})
